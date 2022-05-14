@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>login</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css"
+          href="css/style.css"/>
+    <script>
+        window.onload = function(){
+            var span = document.getElementsByTagName('span')[0];
+            var dateStr = formatDate();
+            // 将时间放置到span内
+            span.innerText = dateStr;
+            // 每隔一秒，再放置一次最新的时间
+            setInterval(function(){
+                span.innerText = formatDate();
+            },1000);
+            //格式化年月日时分秒
+            function formatDate(){
+                var date = new Date();
+                var year = date.getFullYear();
+                var month = date.getMonth()+1;
+                month = month<10?'0'+month:month;
+                var day = date.getDate();
+                day = day<10?'0'+day:day;
+                var hours = date.getHours();
+                hours = hours<10?'0'+hours:hours;
+                var minutes = date.getMinutes();
+                minutes = minutes<10?'0'+minutes:minutes;
+                var seconds = date.getSeconds();
+                seconds = seconds<10?'0'+seconds:seconds;
+                // 2019-07-23 09:40:30
+                return year+'-'+month+'-'+day+' '+hours+':'+minutes+':'+seconds;
+            }
+
+        }
+    </script>
+
+</head>
+
+<body>
+<div id="wrap">
+    <div id="top_content">
+        <div id="header">
+            <div id="rightheader">
+                <div>
+                    <h3>当前时间：
+                        <span>将来放置时间</span> </h3>
+                </div>
+            </div>
+            <div id="topheader">
+                <h1 id="title">
+                    员工管理系统
+                </h1>
+            </div>
+            <div id="navigation">
+            </div>
+        </div>
+        <div id="content">
+            <p id="whereami">
+            </p>
+            <h1>
+                欢迎登录
+            </h1>
+            <form action="emplist.html" method="post">
+                <table cellpadding="0" cellspacing="0" border="0"
+                       class="form_table">
+                    <tr>
+                        <td valign="middle" align="right">
+                            用户名：
+                        </td>
+                        <td valign="middle" align="left">
+                            <input type="text" class="inputgri" v-model="user.username"  name="name"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="middle" align="right">
+                            密码：
+                        </td>
+                        <td valign="middle" align="left">
+                            <input type="password" class="inputgri" v-model="user.password" name="pwd"/>
+                        </td>
+                    </tr>
+                </table>
+                <p>
+                    <a href="/ems_vue/regist.html">立即注册</a>
+
+                    <input type="button" @click="login" class="button" value="登录 &raquo;" />
+                    &nbsp;&nbsp;
+                </p>
+
+
+            </form>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="footer_bg">
+            可放置时间
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script src="/ems_vue/js/vue.js"></script>
+<script src="/ems_vue/js/axios.min.js"></script>
+<script>
+    var app = new Vue({
+        el: "#wrap",
+        data: {
+            user:{},//用来保存用户数据
+        },
+        methods:{
+            //用户登录
+            login(){
+                //发送登录请求
+                axios.post("http://localhost:8989/ems_vue/user/login",this.user).then(res=>{
+                    console.log(res.data);
+                    if(res.data.state){
+                        alert(res.data.msg+",点击确定进入主页!");
+                        //将登录用户信息放入localStorage key  value
+                        localStorage.setItem("user",JSON.stringify(res.data.user));
+                        location.href="/ems_vue/emplist.html";
+                    }else{
+                        alert(res.data.msg);
+                    }
+                });
+            }
+        }
+    });
+</script>
